@@ -10,26 +10,33 @@ export const POST = async (request: NextRequest) => {
 
         connectDb()
 
-        const { content } = await request.json();
-        if (!content) {
+        const { content, chatId } = await request.json();
+        if (!content || !chatId) {
             return NextResponse.json({ success: true, message: "Invalid data passed" }, { status: 400 });
         }
         const encryptedmessagecontent = getEncryptedText(content)
 
-        const userEmail = await getDataFromToken(request);
-        const user = await User.findOne({ email: userEmail }).select("-password").exec()
+        const { success, email, message } = await getDataFromToken(request)
+        if (!success) return NextResponse.json({ success: false, message }, { status: 401 });
+        const user = await User.findOne({ email }).select("-password").exec()
 
         const encryptedMessage = await Message.create({
             content: encryptedmessagecontent,
-            sender: user._id
+            sender: user._id,
+            chatId
         });
-        
-        const newMessage = await encryptedMessage.populate("sender", "name pic email");
 
-        const originalText = getOrignalText(newMessage.content)
+        let populatedMessage = await encryptedMessage.populate("sender", "name pic email");
+        populatedMessage = await populatedMessage.populate("chat");
+        populatedMessage = await User.populate(populatedMessage, {
+            path: "chat.users",
+            select: "name pic email phonenumber"
+        });
 
-        let message:any = await Message.findById({ _id: newMessage._id }).populate("sender", "name pic email").lean()
-        message = { ...message, content: originalText }
+        const originalText = getOrignalText(populatedMessage.content)
+
+        let userMessage: any = await Message.findById({ _id: populatedMessage._id }).populate("sender", "name pic email").lean()
+        userMessage = { ...userMessage, content: originalText }
 
         return NextResponse.json({ success: true, message: "Successfully send message", messageSend: message }, { status: 201 });
     } catch (error) {

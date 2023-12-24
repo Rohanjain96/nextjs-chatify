@@ -8,7 +8,11 @@ const userSchema = new mongoose.Schema<userInterface>({
   email: { type: String, required: true, unique: true },
   dateOfBirth: { type: String },
   password: { type: String, required: true },
-  profilePic: { type: String },
+  profilePic: {
+    type: String,
+    default:
+      "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg",
+  },
 });
 
 userSchema.pre("save", async function (next) {

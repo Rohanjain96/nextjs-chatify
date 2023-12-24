@@ -2,34 +2,41 @@ import { connectDb } from "@/app/db/db";
 import { getDataFromToken } from "@/app/helpers/serverHelpers/getDatafromToken";
 import { User } from "@/app/schemas/user";
 import { Message } from "@/app/schemas/message";
-import CryptoJS from "crypto-js"
 import { NextRequest, NextResponse } from "next/server";
+import { getEncryptedText, getOrignalText } from "@/app/helpers/serverHelpers/encryption";
 
 export const POST = async (request: NextRequest) => {
-
     try {
+
         connectDb()
-        const { content } = await request.json();
-        if (!content) {
+
+        const { content, chatId } = await request.json();
+        if (!content || !chatId) {
             return NextResponse.json({ success: true, message: "Invalid data passed" }, { status: 400 });
         }
-        const encryptedmessagecontent = CryptoJS.AES.encrypt(content, process.env.MESSAGE_SECRET as string).toString();
+        const encryptedmessagecontent = getEncryptedText(content)
 
-        const userEmail = await getDataFromToken(request);
-        const user = await User.findOne({ email: userEmail }).select("-password").exec()
+        const { success, email, message } = await getDataFromToken(request)
+        if (!success) return NextResponse.json({ success: false, message }, { status: 401 });
+        const user = await User.findOne({ email }).select("-password").exec()
 
-        var newmessage = await Message.create({
+        const encryptedMessage = await Message.create({
             content: encryptedmessagecontent,
-            sender: user._id
+            sender: user._id,
+            chatId
         });
-        newmessage = await newmessage.populate("sender", "name pic email");
 
+        let populatedMessage = await encryptedMessage.populate("sender", "name pic email");
+        populatedMessage = await populatedMessage.populate("chat");
+        populatedMessage = await User.populate(populatedMessage, {
+            path: "chat.users",
+            select: "name pic email phonenumber"
+        });
 
-        var bytes = CryptoJS.AES.decrypt(newmessage.content, process.env.MESSAGE_SECRET as string);
-        var originalText = bytes.toString(CryptoJS.enc.Utf8);
+        const originalText = getOrignalText(populatedMessage.content)
 
-        let message:any = await Message.findById({ _id: newmessage._id }).populate("sender", "name pic email").lean()
-        message = { ...message, content: originalText }
+        let userMessage: any = await Message.findById({ _id: populatedMessage._id }).populate("sender", "name pic email").lean()
+        userMessage = { ...userMessage, content: originalText }
 
         return NextResponse.json({ success: true, message: "Successfully send message", messageSend: message }, { status: 201 });
     } catch (error) {

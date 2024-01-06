@@ -1,0 +1,32 @@
+.signup_form_wrapper {
+    width: 100%;
+    height: 100vh;
+    height: 100dvh;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-image: url("https://img.freepik.com/free-photo/communication-social-media-icons_23-2150749329.jpg?w=1380&t=st=1703488586~exp=1703489186~hmac=9ed0cc14ae3ca4cabc69b7174de44252eaef830444ea9d49f04fdddfa79df2a8");
+    font-size: larger;
+    display: grid;
+    place-items: center;
+    color: white;
+}
+
+.signup_form_container {
+    background-color: rgb(255, 255, 255, 0.2);
+    border-radius: 10px;
+    padding: 3rem 2rem;
+    width: 50%;
+    backdrop-filter: blur(5px);
+    --webkit-backdrop-filter: blur(5px);
+    box-shadow: 2px 2px 4px rgba(255, 255, 255, 0.4), -2px -2px 4px rgba(255, 255, 255, 0.345);
+
+}
+
+.signup_heading {
+    background: linear-gradient(90deg, hsla(197, 100%, 63%, 1) 0%, hsla(294, 100%, 55%, 1) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    width: fit-content;
+
+}

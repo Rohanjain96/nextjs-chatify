@@ -11,6 +11,12 @@
     "not safari <= 17"
   ],
   "hints": {
-    "typescript-config/is-valid": "off"
+    "typescript-config/is-valid": "off",
+    "axe/name-role-value": [
+      "default",
+      {
+        "button-name": "off"
+      }
+    ]
   }
 }

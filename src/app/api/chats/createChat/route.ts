@@ -28,9 +28,7 @@ export const POST = async (request: NextRequest) => {
         { users: { $elemMatch: { $eq: user._id } } },
         { users: { $elemMatch: { $eq: userId } } },
       ],
-    })
-      .populate("users", "-password")
-      .populate("latestMessage");
+    }).populate("latestMessage");
 
     isChat = await User.populate(isChat, {
       path: "latestMessage.sender",
@@ -46,7 +44,7 @@ export const POST = async (request: NextRequest) => {
 
     const createdChat = await Chat.create(chatData);
     const fullchat = await Chat.findOne({ _id: createdChat._id }).populate(
-      "users",
+      "User",
       "-password"
     );
 
@@ -56,6 +54,7 @@ export const POST = async (request: NextRequest) => {
       chat: fullchat,
     });
   } catch (error) {
+    console.log(error);
     return NextResponse.json(
       { success: false, message: error },
       { status: 500 }

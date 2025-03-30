@@ -52,6 +52,11 @@ export const LoginForm = () => {
             const { data }: any = await axios.post('/api/users/login', formData)
             if (data.success) {
                 router.push("/")
+                toast({
+                    description: "Loggedin Successfully",
+                    duration: 3000,
+                    variant: "success"
+                })
             }
         } catch (error: any) {
             console.log(error.response.data.message)

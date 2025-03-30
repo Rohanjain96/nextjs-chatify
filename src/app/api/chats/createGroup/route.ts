@@ -42,7 +42,7 @@ export const POST = async (request: NextRequest) => {
     const createdgroupchat = await Chat.create(groupChat);
 
     let fullGroupChat = await Chat.findOne({ _id: createdgroupchat._id })
-      .populate("users", "-password")
+      .populate("User", "-password")
       .populate("groupAdmin");
 
     fullGroupChat = await User.populate(fullGroupChat, {

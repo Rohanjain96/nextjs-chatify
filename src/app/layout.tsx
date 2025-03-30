@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Toaster } from "@/components/ui/toaster"
 import { Roboto } from 'next/font/google'
 import './globals.css'
+import { ChatProvider } from './context/chatProvider'
 
 const roboto = Roboto({ subsets: ['latin'], weight: ["100", "300", "400", "500"] })
 
@@ -18,8 +19,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={roboto.className}>
-        {children}
-        <Toaster />
+        <ChatProvider>
+          {children}
+          <Toaster />
+        </ChatProvider>
       </body>
     </html>
   )

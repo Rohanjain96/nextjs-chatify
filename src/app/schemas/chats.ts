@@ -16,23 +16,17 @@ const chatSchema = new Schema(
     users: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "users",
+        ref: "User",
       },
     ],
 
     latestMessage: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "messages",
+      ref: "Message",
     },
 
-    groupAdmin: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "users",
-    },
     groupPic: {
       type: String,
-      default:
-        "https://th.bing.com/th?q=Group+Profile+Icon&w=120&h=120&c=1&rs=1&qlt=90&cb=1&dpr=1.3&pid=InlineBlock&mkt=en-IN&cc=IN&setlang=en&adlt=moderate&t=1&mw=247",
     },
   },
   {
@@ -40,5 +34,4 @@ const chatSchema = new Schema(
   }
 );
 
-export const Chat =
-  mongoose.models.chats || mongoose.model("chats", chatSchema);
+export const Chat = mongoose.models.Chat || mongoose.model("Chat", chatSchema);

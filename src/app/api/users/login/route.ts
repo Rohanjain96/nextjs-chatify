@@ -1,7 +1,7 @@
 import { connectDb } from "@/app/db/db";
 import { User } from "@/app/schemas/user";
 import { NextRequest, NextResponse } from "next/server";
-import jwt from "jsonwebtoken"
+import jwt from "jsonwebtoken";
 
 export const POST = async (request: NextRequest) => {
   try {
@@ -10,15 +10,18 @@ export const POST = async (request: NextRequest) => {
     const user = await User.findOne({ email }).exec();
     const matched = await user?.comparePassword(password);
     if (!user || !matched) {
-      return NextResponse.json({
-        success: false,
-        message: "Invalid credentials",
-      },{status:401});
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Invalid credentials",
+        },
+        { status: 401 }
+      );
     }
 
-    const token = jwt.sign(email,process.env.JSON_SECRET as string)
-    
-    const response =  NextResponse.json({
+    const token = jwt.sign(email, process.env.JSON_SECRET as string);
+
+    const response = NextResponse.json({
       success: true,
       message: "User loggedin successfully",
       response: {
@@ -30,14 +33,17 @@ export const POST = async (request: NextRequest) => {
       },
     });
 
-    response.cookies.set('jwttoken',token,{httpOnly:true,secure:false,expires: new Date(Date
-      .now() + 2592000000)})
-    return response
+    response.cookies.set("jwttoken", token, {
+      httpOnly: true,
+      secure: false,
+      expires: new Date(Date.now() + 2592000000),
+    });
+    return response;
   } catch (error) {
     console.log(error);
     return NextResponse.json(
       { success: false, message: "Some error occured" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 };

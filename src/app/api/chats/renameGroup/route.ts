@@ -24,7 +24,7 @@ export const PATCH = async (request: NextRequest) => {
         new: true,
       }
     )
-      .populate("users", "-password")
+      .populate("User", "-password")
       .populate("groupAdmin", "-password");
 
     if (!updatedChat) {
